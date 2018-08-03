@@ -1,33 +1,10 @@
 from __future__ import print_function
-from waitress import serve
 from flask import Flask
 from flask import make_response, request
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import io
-import sys
-import roadsafety
-import numpy as np
-import twmph
-import twimage
-import logging
 
-logger=logging.getLogger('waitress')
-logger.setLevel(logging.DEBUG)
+import pycode
 
 app = Flask(__name__,static_url_path="/static")
-
-
-def draw_graph():
-    x = [np.random.randint(10) for _ in range(10)]
-    y = [np.random.randint(10) for _ in range(10)]
-
-    plt.plot(x, y)
-    buf=io.BytesIO()
-    plt.savefig(buf,format='png')
-    plt.clf()
-    return buf
 
 @app.route("/")
 def hello():
@@ -42,13 +19,13 @@ def hello():
 
 @app.route("/stick")
 def stick():
-    print('Received Call', file=sys.stderr)
-    print('/', file=sys.stderr)
-    print('IP:', request.remote_addr, file=sys.stderr)
-    print(request.args, file=sys.stderr)
+    print('Received Call')
+    print('/')
+    print('IP:', request.remote_addr)
+    print(request.args)
     args=request.args.to_dict()
     print(args['v1'])
-    buf=roadsafety.quickimage(int(args['v1']),int(args['v2']))
+    buf=pycode.quickimage(int(args['v1']),int(args['v2']))
     buf.seek(0)
     response = make_response(buf.read())
 
@@ -58,16 +35,16 @@ def stick():
 
 @app.route("/twentyform")
 def twentyform():
-    print('Received Call', file=sys.stderr)
-    print('/', file=sys.stderr)
-    print('IP:', request.remote_addr, file=sys.stderr)
-    print(request.args, file=sys.stderr)
+    print('Received Call')
+    print('/')
+    print('IP:', request.remote_addr)
+    print(request.args)
     args=request.args.to_dict()
     ret="Error - you should have typed a street name"
     if 'road' in args:
         #print(args['road'])
         ret="<H1>Nope,it's not in a twenty (or I can't find the street name)"
-        a=twmph.ismyroad(args['road'])
+        a=pycode.ismyroad(args['road'])
         if a[0]:
             print (str(a[1]))
             ret="<H1>Yep, it's in a twenty <IMG SRC=\'/getpic.png?coords="+str(a[1])+"\'</IMG>"
@@ -78,7 +55,7 @@ def helo():
 
     args = request.args.to_dict()
     #print args
-    buf=twimage.countup(args['coords'])
+    buf=pycode.countup(args['coords'])
     buf.seek(0)
     response = make_response(buf.read())
     response.headers.set('Content-Type', 'image/png')
@@ -93,7 +70,3 @@ def twenty():
     retval+='<input type="submit" value="Submit">'
     retval+='</form></body></html>'
     return retval
-
-
-if __name__ == '__main__':
-    serve(app, listen='0.0.0.0:80')
