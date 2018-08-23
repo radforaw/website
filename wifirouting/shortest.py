@@ -39,10 +39,14 @@ def OsmRouteImport(imported):
 	wt = weightget("car")
 	waydict = {}
 	nodes = {}
+	simpledict={}
+	ctr=1
 	for m in root.findall('node'):
 		x, y = geometry.deg2num(
 			float(m.attrib['lat']), float(m.attrib['lon']), zoom=ZM)
-		nodes[int(m.attrib['id'])] = [x, y]
+		simpledict[int(m.attrib['id'])]=ctr
+		nodes[ctr]= [x, y]
+		ctr+=1
 		#print m.attrib
 		if 'k' in m.attrib:
 			if m.attrib['k'] == "barrier":
@@ -65,7 +69,7 @@ def OsmRouteImport(imported):
 		prev = None
 		for l in n.findall('nd'):
 
-			current = int(l.attrib['ref'])
+			current = simpledict[int(l.attrib['ref'])]
 			if current not in waydict:
 				waydict[current] = {}
 			if prev:
@@ -78,6 +82,8 @@ def OsmRouteImport(imported):
 	for a in waydict:
 		for b in waydict[a]:
 			n.append([int(a), int(b), int(waydict[a][b]*100000)])
+	print max(a[0] for a in n)
+	print max(a[2] for a in n)
 	return n, nodes
 
 

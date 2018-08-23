@@ -147,7 +147,7 @@ def main():
 	x, y = minmax([ret[x]['coordinates'][0]
 																for x in ret] + [ret[x]['coordinates'][1] for x in ret])
 	
-	if old > 60: 
+	if old > 400060: 
 		sampleget.osmcreate(x, y)
 	
 	map_osm = folium.Map(location=(52.483678100000005, -1.8201131000000134), zoom_start=14)
@@ -198,9 +198,9 @@ def main():
 
 		tmp=[(x[0],x[1]) for x in min(r2, key=lambda x: x[0])[1]]
 		res1.append(tmp)
-		'''if ctr == 2:
+		if ctr == 2:
 			break
-		'''
+		
 	import json
 	with open ('links.json','w') as jsonfile:
 		json.dump(res1,jsonfile)
@@ -242,13 +242,15 @@ def main():
 	
 	
 	map_osm.save('map.html')
-	'''
-	file_path = 'map.html'
-	file_path = os.path.abspath(file_path)
-	w = ui.WebView()
-	w.load_url(file_path)
-	w.present()
-	'''
+	import sys
+	if sys.platform=='ios':
+		import ui
+		file_path = 'map.html'
+		file_path = os.path.abspath(file_path)
+		w = ui.WebView()
+		w.load_url(file_path)
+		w.present()
+	
 
 if __name__=='__main__':
 	main()
