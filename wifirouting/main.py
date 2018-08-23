@@ -4,14 +4,16 @@ import requests
 import xml.etree.cElementTree as ET
 import re
 import math
-import geometry
-import shortest
 import pickle
-import sampleget
 import time
 import folium
 import os
 from collections import defaultdict
+
+import config
+import geometry
+import shortest
+import sampleget
 
 def dist(x):
 	a1 = x[0][0]
@@ -228,8 +230,8 @@ def main():
 			temp, color='black',weight=8).add_to(map_osm)
 		folium.PolyLine(
 			temp, popup='try later',weight=7, color=col[ctr % 9]).add_to(map_osm)
-		#folium.Marker(ret[n]['coordinates'][0]).add_to(map_osm)
-		#folium.Marker(ret[n]['coordinates'][1]).add_to(map_osm)
+		''folium.Marker(ret[n]['coordinates'][0]).add_to(map_osm)
+		folium.Marker(ret[n]['coordinates'][1]).add_to(map_osm)'''
 		ctr+=1
 
 	
