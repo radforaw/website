@@ -15,6 +15,7 @@ from cStringIO import StringIO
 import csv
 from requests.exceptions import ConnectionError
 from math import atan2, pi
+#import dik
 
 ZM = 13
 
@@ -82,8 +83,6 @@ def OsmRouteImport(imported):
 	for a in waydict:
 		for b in waydict[a]:
 			n.append([int(a), int(b), int(waydict[a][b]*100000)])
-	print max(a[0] for a in n)
-	print max(a[2] for a in n)
 	return n, nodes
 
 
@@ -167,24 +166,6 @@ def findminmax(nodes):
 	return a, b, c, d, e
 
 
-def getloc(pos, nodes, lines, origang):
-	nearest = 100000
-	nearpoint = (0, 0)
-	ln = -1
-	ang = 0
-	t = (0, 0)
-	for n in lines:
-		a, b = pointlinedistance((nodes[n[0]], nodes[n[1]]), pos)
-		if b < nearest:
-			'''ang=angle(nodes[n[0]],nodes[n[1]])
-			j=180 - abs(abs(ang - origang) - 180)
-			if j<45:'''
-			#t=(ang,j)
-			nearest = b
-			nearpoint = a
-			ln = n
-	#print origang,tt
-	return nearpoint, tuple(ln)
 
 
 def circle(sides, size, centre=(0, 0)):
@@ -196,28 +177,7 @@ def circle(sides, size, centre=(0, 0)):
 	return midres
 
 
-def getloc2(pos, nodes, lines, origang):
-	n = [getloc(x, nodes, lines, origang) for x in circle(2, .0026, centre=pos)]
-	return list(set(n))
 
-
-def getlocs(pos, nodes, lines, origang):
-	#{'nearest':100000,'nearpoint':(0,0),'ln':-1}
-	c = circle(20, .01, centre=pos)
-	#print c
-	d = []
-	for x in range(len(c)):
-		d.append({'nearest': 100000, 'nearpoint': (0, 0), 'ln': -1})
-	for n in lines:
-		for x in range(len(c)):
-			a, b = pointlinedistance((nodes[n[0]], nodes[n[1]]), c[x])
-			if b < d[x]['nearest']:
-				d[x]['nearest'] = b
-				d[x]['nearpoint'] = a
-				d[x]['ln'] = n
-
-	j = [(x['nearpoint'], tuple(x['ln'])) for x in d]
-	return list(set(j))  #need to remove 'ln' duplicates...
 	
 def getlocsa(pos, nodes, lines, origang):
 	j=[]
@@ -239,60 +199,18 @@ def offset(a,b,off=0.1):
 	lx,ly=math.sin(ang)*off,math.cos(ang)*off
 	return (x1+lx,y1+ly),(x2+lx,y2+ly)
 
-def LineIntersectCircle(p, lsp, lep):
-	# p is the circle parameter, lsp and lep is the two end of the line
-	x0, y0, r0 = p
-	x1, y1 = lsp
-	x2, y2 = lep
-	if x1 == x2:
-		if abs(r0) >= abs(x1 - x0):
-			p1 = x1, y0 - math.sqrt(r0**2 - (x1 - x0)**2)
-			p2 = x1, y0 + math.sqrt(r0**2 - (x1 - x0)**2)
-			inp = [p1, p2]
-			# select the points lie on the line segment
-			inp = [p for p in inp if p[1] >= min(y1, y2) and p[1] <= max(y1, y2)]
-		else:
-			inp = []
-	else:
-		k = (y1 - y2) / (x1 - x2)
-		b0 = y1 - k * x1
-		a = k**2 + 1
-		b = 2 * k * (b0 - y0) - 2 * x0
-		c = (b0 - y0)**2 + x0**2 - r0**2
-		delta = b**2 - 4 * a * c
-		if delta >= 0:
-			p1x = (-b - math.sqrt(delta)) / (2 * a)
-			p2x = (-b + math.sqrt(delta)) / (2 * a)
-			p1y = k * x1 + b0
-			p2y = k * x2 + b0
-			inp = [[p1x, p1y], [p2x, p2y]]
-			# select the points lie on the line segment
-			inp = [p for p in inp if p[0] >= min(x1, x2) and p[0] <= max(x1, x2)]
-		else:
-			inp = []
-	return inp
 
 def FindLineCircleIntersections(p,point1, point2):
 	cx,cy,radius= p
 	dx = point2[0] - point1[0]
 	dy = point2[1] - point1[1]
-	'''if distance(point1,(cx,cy))<radius and distance(point2,(cx,cy))<radius:
-		return []'''
+
 	A = dx * dx + dy * dy
 	B = 2 * (dx * (point1[0] - cx) + dy * (point1[1] - cy))
 	C = (point1[0] - cx) * (point1[0] - cx) + (point1[1] - cy) * (
 		point1[1] - cy) - radius * radius
 
 	det = B * B - 4 * A * C
-	'''if (A <= 0.0000001) or (det < 0):
-		return []
-	elif det == 0:
-		t = -B / (2 * A)
-		intersection1 = (point1[0] + t * dx, point1[1] + t * dy)
-		if min([point1[0],point2[0]])<intersection1[0]<max([point1[0],point2[0]]) and min([point1[1],point2[1]])<intersection1[1]<max([point1[1],point2[1]]):
-			return []
-		return [intersection1]
-	else:'''
 	try:
 		n=[]
 		t = (-B + math.sqrt(det)) / (2 * A)
@@ -349,100 +267,26 @@ class osmmap():
 		with open("tilecache.pickle", "w") as picfile:
 			pickle.dump(self.cache, picfile)
 
-
-'''
-if __name__=='__main__':
-	import pygame,sys
-	with open('sampledata.pickle') as file:
-		osm=pickle.load(file)
-		a,b=OsmRouteImport(osm) #a-links,b-nodes
-		minx,maxx,miny,maxy,ratio=findminmax(b)
-		print a[0]
-		for n in b:
-			print n,b[n]
-			break
-	pygame.init()
-	size = width, height = 1024,768
-	screen = pygame.display.set_mode(size)
-	screen.fill((255,255,255))
-	clock=pygame.time.Clock()
-	for n in a: #draws the screen
-		start=(int(((b[n[0]][0]-minx)/(ratio))*width),int(((b[n[0]][1]-miny)/(ratio))*height))
-		end=(int(((b[n[1]][0]-minx)/(ratio))*width),int(((b[n[1]][1]-miny)/(ratio))*height))
-		pygame.draw.line(screen, (0,0,0), start, end, 1)
-	try: #draws the image on top
-		c=osmmap(zoom=ZM,baseurl="http://192.168.1.113/hot/")
-		pxarray=pygame.PixelArray(screen)
-		for x in range(width):
-			for y in range(height):
-				tx=(((x/float(width))*(ratio))+minx)
-				ty=(((y/float(height))*(ratio))+miny)
-				pxarray[x,y]=c.locationcolour((int(tx),int(ty)),(int((tx%1)*256),int((ty%1)*256)))
-			pygame.display.flip()
-		del pxarray
-	except ConnectionError as e:
-		pass
-	#c.tilesave()
-	end=False
-	while 1:
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT: sys.exit()
-			if event.type == pygame.MOUSEBUTTONDOWN:
-				if pygame.mouse.get_pressed()[0]==True:
-					pos=pygame.mouse.get_pos()
-					print pos
-					plt,ln=getloc(((((pos[0]/float(width))*(ratio))+minx),(((pos[1]/float(height))*(ratio))+miny)),b,a)
-					pltloc=(int(((plt[0]-minx)/(ratio))*width),int(((plt[1]-miny)/(ratio))*height))
-					pygame.draw.circle(screen,(255,0,0),pltloc,4)
-					if not end:
-						n1=b[ln[0]]
-						n2=b[ln[1]]
-						d1=distance(n1,plt)
-						d2=distance(n2,plt)
-						ns=[['start',ln[1],d2]]
-						o=plt
-						t=False
-						for tmp in a:
-							if tmp[0]==ln[1] and tmp[1] ==ln[0]:
-								t=True
-						if t:
-							ns+=[['start',ln[0],d1]]
-						end=True
-					else:
-						n1=b[ln[0]]
-						n2=b[ln[1]]
-						d1=distance(n1,plt)
-						d2=distance(n2,plt)
-						ns+=[[ln[1],'end',d2]]
-						# 'start',n2
-						t=False
-						for tmp in a:
-							if tmp[0]==ln[1] and tmp[1] ==ln[0]:
-								t=True
-						if t:
-							ns+=[[ln[0],'end',d1]]
-						temp=list(Flatten(Dijkstra(a+ns,'start','end')))[2:-1]
-						temp=[list(plt)]+[b[n] for n in temp]+[list(o)]
-						pygame.draw.lines(screen,(255,0,0),False,[[int(((plt[0]-minx)/(ratio))*width),int(((plt[1]-miny)/(ratio))*height)] for plt in temp],4)
-						end=False
-				elif pygame.mouse.get_pressed()[2]==True:
-					pos=pygame.mouse.get_pos()
-					print pos
-					plt,ln=getloc(((((pos[0]/float(width))*(ratio))+minx),(((pos[1]/float(height))*(ratio))+miny)),b,a)
-					pltloc=(int(((plt[0]-minx)/(ratio))*width),int(((plt[1]-miny)/(ratio))*height))
-					print pltloc
-					pygame.draw.line(screen,(0,0,192),[pltloc[0]-8,pltloc[1]-8],[pltloc[0]+8,pltloc[1]+8],4)
-					pygame.draw.line(screen,(0,0,192),[pltloc[0]+8,pltloc[1]-8],[pltloc[0]-8,pltloc[1]+8],4)
-					a.remove(ln)
-					for n in range(len(a)):
-						if a[n][1]==ln[0] and a[n][0]==ln[1]:
-							a.remove(a[n])
-							break
-		clock.tick(30)
-		pygame.display.flip()
-
-
-# lines [from,to,distance]
-# node[no]=[x,y] 
-'''
+def setupshortest(plt, ln, plt1, ln1, t, b, a, origang):
+	#plt,ln= shortest.getloc(t,b,a,origang)
+	n1 = b[ln[0]]  #gets point of start of line
+	n2 = b[ln[1]]  #gets point of end of line
+	if [True for tmp in a if tmp[0] == ln[1] and tmp[1] == ln[0]]:
+		ns = [[-1, ln[0], distance(n2, plt)/4]]
+	else:
+		ns = [[-1, ln[1], distance(n1, plt)/4]]
+	n1 = b[ln1[0]]
+	n2 = b[ln1[1]]
+	if [True for tmp in a if tmp[0] == ln1[1] and tmp[1] == ln1[0]]:
+		ns += [[ln1[1], -2, distance(n2, plt1)/4]]
+	else:
+		ns += [[ln1[0], -2, distance(n1, plt1)/4]]
+	try:
+		temp = list(Flatten(Dijkstra(a + ns, -1,-2)))
+		dist = temp[0]
+		temp = temp[2:-1]
+	except:
+		return 100000, 0
+	temp = [list(plt1)] + [b[nn] for nn in temp] + [list(plt)]
+	return dist, temp
 

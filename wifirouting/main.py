@@ -10,7 +10,7 @@ import geometry
 import shortest
 import sampleget
 import journeytimeinfo
-import dik
+
 
 def dist(x):
 	a1 = x[0][0]
@@ -53,28 +53,6 @@ class offset():
 		return self.off(a,b,off)
 
 
-def setupshortest(plt, ln, plt1, ln1, t, b, a, origang):
-	#plt,ln= shortest.getloc(t,b,a,origang)
-	n1 = b[ln[0]]  #gets point of start of line
-	n2 = b[ln[1]]  #gets point of end of line
-	if [True for tmp in a if tmp[0] == ln[1] and tmp[1] == ln[0]]:
-		ns = [[-1, ln[0], shortest.distance(n2, plt)/4]]
-	else:
-		ns = [[-1, ln[1], shortest.distance(n1, plt)/4]]
-	n1 = b[ln1[0]]
-	n2 = b[ln1[1]]
-	if [True for tmp in a if tmp[0] == ln1[1] and tmp[1] == ln1[0]]:
-		ns += [[ln1[1], -2, shortest.distance(n2, plt1)/4]]
-	else:
-		ns += [[ln1[0], -2, shortest.distance(n1, plt1)/4]]
-	try:
-		temp = list(shortest.Flatten(dik.Dijkstra(a + ns, -1,-2)))
-		dist = temp[0]
-		temp = temp[2:-1]
-	except:
-		return 100000, 0
-	temp = [list(plt1)] + [b[nn] for nn in temp] + [list(plt)]
-	return dist, temp
 
 def main():
 	#get data on the links from the portal
@@ -106,16 +84,17 @@ def main():
 		for start in shortest.getlocsa(t, b, a, origang):
 			for end in zt:
 				r2.append(
-					setupshortest(start[0], start[1], end[0], end[1], t, b, a, origang))
+					shortest.setupshortest(start[0], start[1], end[0], end[1], t, b, a, origang))
 		print time.time()-tst
-		tmp=[(x[0],x[1]) for x in min(r2, key=lambda x: x[0])[1]]
-		res1.append(tmp)
-		if ctr == 2:
+		#tmp=[(x[0],x[1]) for x in min(r2, key=lambda x: x[0])[1]]
+		ret[n]['route']=[geometry.WGS84toOSGB36(*geometry.num2deg(x[0],x[1],13)) for x in min(r2, key=lambda x: x[0])[1]]
+		ret[n]['distance']=sum([shortest.distance(ret[n]['route'][i],ret[n]['route'][i+1]) for i in range(len(ret[n]['route'])-1)])
+		if ctr == 5:
 			break
 		
 	import json
 	with open ('links.json','w') as jsonfile:
-		json.dump(res1,jsonfile)
+		json.dump(ret,jsonfile)
 
 	#this section draws the map
 
@@ -124,22 +103,21 @@ def main():
 	col=['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a']
 	ctr=0
 	vals=[]
+	res1=[ret[a]['route'] for a in ret if 'route' in ret[a]]
 	for n in res1:
 		distance=sum([shortest.distance(n[a],n[a+1]) for a in range(len(n)-1)])
 		vals.append([distance,n])
 	vals=[n[1] for n in sorted(vals)]
 	for tmp in vals:
-		mx=max([offdata.add(tmp[x][0],tmp[x][1],.013) for x in range(len(tmp)-1)])
+		mx=max([offdata.add(tmp[x][0],tmp[x][1],20) for x in range(len(tmp)-1)])
 		temp=[offdata.off((tmp[x][0],tmp[x][1]),(tmp[x+1][0],tmp[x+1][1]),mx) for x in range(len(tmp)-1)]
 		tp=[a[0] for a in temp]
 		tp.append(temp[-1][1])
 		print tp
 		temp = [
-			geometry.num2deg(x[0], x[1], 13) for x in tp
+			geometry.OSGB36toWGS84(x[0], x[1]) for x in tp
 		]
 		print 'm', min(r2, key=lambda x: x[0])[0]
-		'''except:
-			continue'''
 		
 		folium.PolyLine(
 			temp, color='black',weight=8).add_to(map_osm)
