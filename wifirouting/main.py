@@ -44,7 +44,7 @@ class offset():
 	def off(self,a,b,off):
 		x1,y1=a
 		x2,y2=b
-		ang=math.atan2(x2-x1,y2-y1)-(3.1415926/2.0)
+		ang=math.atan2(x2-x1,y2-y1)+(3.1415926/2.0)
 		lx,ly=math.sin(ang)*off,math.cos(ang)*off
 		return [(x1+lx,y1+ly),(x2+lx,y2+ly)]
 	
@@ -109,7 +109,7 @@ def main():
 		vals.append([distance,n])
 	vals=[n[1] for n in sorted(vals)]
 	for tmp in vals:
-		mx=max([offdata.add(tmp[x][0],tmp[x][1],20) for x in range(len(tmp)-1)])
+		mx=max([offdata.add(tmp[x][0],tmp[x][1],40) for x in range(len(tmp)-1)])
 		temp=[offdata.off((tmp[x][0],tmp[x][1]),(tmp[x+1][0],tmp[x+1][1]),mx) for x in range(len(tmp)-1)]
 		tp=[a[0] for a in temp]
 		tp.append(temp[-1][1])
@@ -126,7 +126,7 @@ def main():
 		ctr+=1
 
 	
-	map_osm.save('map.html')
+	map_osm.save('~/website/website/yourapp/static/map.html')
 	import sys
 	if sys.platform=='ios':
 		import ui
