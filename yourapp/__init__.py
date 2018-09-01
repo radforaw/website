@@ -17,6 +17,7 @@ def hello():
     retval+="<LI><i>where v is <B>vehicle number</b>"
     retval+="<LI><i>1-8 are compass points representing <B>from</B> and <B>to</B></i>"
     retval+="<BR><a href='twenty'>Is my road 20mph?</a>"
+    retval+="<BR><a href='map'>Wifi Map</a>"
     return retval
 
 @app.route("/stick")
