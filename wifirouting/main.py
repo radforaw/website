@@ -89,8 +89,8 @@ def main():
 		#tmp=[(x[0],x[1]) for x in min(r2, key=lambda x: x[0])[1]]
 		ret[n]['route']=[geometry.WGS84toOSGB36(*geometry.num2deg(x[0],x[1],13)) for x in min(r2, key=lambda x: x[0])[1]]
 		ret[n]['distance']=sum([shortest.distance(ret[n]['route'][i],ret[n]['route'][i+1]) for i in range(len(ret[n]['route'])-1)])
-		if ctr == 5:
-			break
+		#if ctr == 3:
+		#	break
 		
 	import json
 	with open ('links.json','w') as jsonfile:
@@ -126,7 +126,7 @@ def main():
 		ctr+=1
 
 	
-	map_osm.save('~/website/website/yourapp/static/map.html')
+	map_osm.save('/home/ubuntu/website/website/yourapp/static/map.html')
 	import sys
 	if sys.platform=='ios':
 		import ui

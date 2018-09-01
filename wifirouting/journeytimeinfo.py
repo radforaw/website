@@ -2,6 +2,7 @@ import requests
 import os
 import xml.etree.cElementTree as ET
 import config
+print config.__file__
 import pickle
 import geometry
 import re
