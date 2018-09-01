@@ -49,6 +49,7 @@ def getwifidata():
 			b = flow.find('SCN').text
 			c = flow.find('Plates').attrib['matched']
 			d = flow.find('Time').text
+			#print b
 		except AttributeError:
 			continue
 		tmp = []
@@ -67,3 +68,4 @@ def getwifidata():
 			except KeyError:
 				print tmp[0], tmp[1]
 	return ret
+getwifidata()()

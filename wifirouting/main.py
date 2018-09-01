@@ -86,56 +86,15 @@ def main():
 				r2.append(
 					shortest.setupshortest(start[0], start[1], end[0], end[1], t, b, a, origang))
 		print time.time()-tst
-		#tmp=[(x[0],x[1]) for x in min(r2, key=lambda x: x[0])[1]]
 		ret[n]['route']=[geometry.WGS84toOSGB36(*geometry.num2deg(x[0],x[1],13)) for x in min(r2, key=lambda x: x[0])[1]]
 		ret[n]['distance']=sum([shortest.distance(ret[n]['route'][i],ret[n]['route'][i+1]) for i in range(len(ret[n]['route'])-1)])
-		#if ctr == 3:
-		#	break
-		
+		if ctr == 25:
+			break
+
 	import json
 	with open ('links.json','w') as jsonfile:
 		json.dump(ret,jsonfile)
 
-	#this section draws the map
-
-	map_osm = folium.Map(location=(52.483678100000005, -1.8201131000000134), zoom_start=14)
-	col = ['red', 'green', 'blue']
-	col=['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a']
-	ctr=0
-	vals=[]
-	res1=[ret[a]['route'] for a in ret if 'route' in ret[a]]
-	for n in res1:
-		distance=sum([shortest.distance(n[a],n[a+1]) for a in range(len(n)-1)])
-		vals.append([distance,n])
-	vals=[n[1] for n in sorted(vals)]
-	for tmp in vals:
-		mx=max([offdata.add(tmp[x][0],tmp[x][1],40) for x in range(len(tmp)-1)])
-		temp=[offdata.off((tmp[x][0],tmp[x][1]),(tmp[x+1][0],tmp[x+1][1]),mx) for x in range(len(tmp)-1)]
-		tp=[a[0] for a in temp]
-		tp.append(temp[-1][1])
-		print tp
-		temp = [
-			geometry.OSGB36toWGS84(x[0], x[1]) for x in tp
-		]
-		print 'm', min(r2, key=lambda x: x[0])[0]
-		
-		folium.PolyLine(
-			temp, color='black',weight=8).add_to(map_osm)
-		folium.PolyLine(
-			temp, popup='try later',weight=7, color=col[ctr % 9]).add_to(map_osm)
-		ctr+=1
-
-	
-	map_osm.save('/home/ubuntu/website/website/yourapp/static/map.html')
-	import sys
-	if sys.platform=='ios':
-		import ui
-		file_path = 'map.html'
-		file_path = os.path.abspath(file_path)
-		w = ui.WebView()
-		w.load_url(file_path)
-		w.present()
-	
 
 if __name__=='__main__':
 	main()
