@@ -3,6 +3,8 @@ from flask import Flask
 from flask import make_response, request
 
 import pycode
+import pycode.wifirouting.graphs as gph
+import pycode.wifirouting.sortapp as fol
 
 app = Flask(__name__,static_url_path="/static")
 
@@ -70,3 +72,17 @@ def twenty():
     retval+='<input type="submit" value="Submit">'
     retval+='</form></body></html>'
     return retval
+
+
+@app.route("/map")
+def mapper():
+	return fol.main()
+
+@app.route("/graph.png")
+def graph():
+    args=request.args.to_dict()
+    if 'scn' in args:
+        response = make_response(gph.drawagraph(args['scn']).img.read())
+        response.headers.set('Content-Type', 'image/png')
+        response.headers.set('Content-Disposition', 'inline')
+        return response
