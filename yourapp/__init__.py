@@ -5,6 +5,8 @@ from flask import make_response, request
 import pycode
 import pycode.wifirouting.graphs as gph
 import pycode.wifirouting.sortapp as fol
+import pycode.wifirouting.VMS as vms
+
 
 app = Flask(__name__,static_url_path="/static")
 
@@ -87,3 +89,6 @@ def graph():
         response.headers.set('Content-Type', 'image/png')
         response.headers.set('Content-Disposition', 'inline')
         return response
+
+@app.route("/vms")
+	return vms.main()
