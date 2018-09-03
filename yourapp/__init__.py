@@ -5,7 +5,7 @@ from flask import make_response, request
 import pycode
 import pycode.wifirouting.graphs as gph
 import pycode.wifirouting.sortapp as fol
-import pycode.wifirouting.VMS as vms
+import pycode.wifirouting.VMS as vmslist
 
 
 app = Flask(__name__,static_url_path="/static")
@@ -91,4 +91,5 @@ def graph():
         return response
 
 @app.route("/vms")
-	return vms.main()
+def vms():
+	return vmslist.main()

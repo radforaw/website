@@ -48,5 +48,7 @@ if __name__=="__main__":
 		#w.load_url(file_path)
 		w.load_html(main())
 		w.present()
+	else:	
+		print main()
 	
 
