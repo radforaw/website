@@ -68,4 +68,6 @@ def getwifidata():
 			except KeyError:
 				print tmp[0], tmp[1]
 	return ret
-getwifidata()
+
+if __name__=='__main__':
+	print getwifidata()

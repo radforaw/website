@@ -3,6 +3,7 @@ import folium
 import branca
 import math
 import geometry
+import journeytimeinfo
 from collections import OrderedDict,defaultdict
 from operator import itemgetter
 import os
@@ -36,6 +37,10 @@ def main():
 	'''for n in data:
 		print data[n]
 		break'''
+	update=journeytimeinfo.getwifidata()
+	for x in data:
+		data[x]['Time']=update[x]['Time']
+		data[x]['matched']=update[x]['matched']
 	a=sorted([[data[n][u'distance'],n,data[n]] for n in data if u'distance' in data[n]])
 	offdata=offset()
 	map_osm = folium.Map(location=(52.483678100000005, -1.8201131000000134), zoom_start=14)
@@ -84,7 +89,7 @@ def main():
 	
 	return map_osm.get_root().render()
 
-if __name__=="main":
+if __name__=="__main__":
 	import sys,os, StringIO
 	if sys.platform=='ios':
 		import ui
