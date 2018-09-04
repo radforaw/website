@@ -22,6 +22,8 @@
 #  
 #  
 import requests
+import datetime
+import pprint
 try:
 	from lxml import etree as ET
 except ImportError:
@@ -29,7 +31,38 @@ except ImportError:
 key={"apikey":"QAPLPKaFokiEkmpv7oFDSw"}
 surl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/vms/status"
 durl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/vms/definition"
+surl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/traveltime/status"
+durl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/traveltime/definition"
 ns="{http://datex2.eu/schema/2/2_0}"
+
+#'WiFiL8': {'matched': '4', 'Description': 'Tyburn Rd WB E4421 to E4439', 'coordinates': [(52.513136240808485, -1.8279231846372113), (52.51100479248898, -1.8336337387460437)], 'Time': '50'}}
+
+
+def anpr():
+	ret={}
+	n=requests.get(durl,params=key)
+	#pprint.pprint(n.content)
+	root=ET.fromstring(n.content)
+	for a in root.iter(ns+'measurementSiteRecord'):
+		tmp= a.attrib['id']
+		for b in a.iter(ns+'measurementSiteName'):
+			ret[tmp]={'Description':b.find(ns+'values').find(ns+'value').text}
+		j=[float(c.text) for c in a.iter(ns+'latitude')]
+		k=[float(c.text) for c in a.iter(ns+'longitude')]
+		ret[tmp]['coordinates']=[(j[0],k[0]),(j[-1],k[-1])]
+	n=requests.get(surl,params=key)
+	#pprint.pprint(n.content)
+	root=ET.fromstring(n.content)
+	for a in root.iter(ns+'siteMeasurements'):
+		tmp=a.find(ns+'measurementSiteReference').attrib['id']
+		ret[tmp]['timestamp']=datetime.datetime.strptime(a.find(ns+'measurementTimeDefault').text[:-5],'%Y-%m-%dT%H:%M:%S')
+		for b in a.iter(ns+'travelTime'):
+			ret[tmp]['Time']=b.find(ns+'duration').text
+		for b in a.iter(ns+'normallyExpectedTravelTime'):
+			ret[tmp]['expected']= b.find(ns+'duration').text
+		ret[tmp]['matched']='0'
+	return ret
+
 
 def main():
 	defs={}
@@ -61,4 +94,5 @@ def main():
 	return [['Null',defs[h][1],defs[h][0],h] for h in defs]
 
 if __name__ == '__main__':
-	print main()
+	#print main()
+	anpr()
