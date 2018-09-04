@@ -10,6 +10,7 @@ import andyconfig
 import geometry as g
 import folium
 import branca
+import bristol
 
 def get_vms():
 	url='http://bcc.opendata.onl/UTMC VMS.xml'
@@ -21,24 +22,25 @@ def get_vms():
 		tmp=datetime.datetime.strptime(VMS.find("Date").text,'%Y-%m-%d %H:%M:%S')
 		now=datetime.datetime.now()-datetime.timedelta(days=28)
 		if tmp>now and len(VMS.find('SCN').text)<20 and VMS.find('Message').text:
-			ret.append([VMS.find('Description').text,VMS.find('Message').text,(float(VMS.find('Northing').text),(float(VMS.find('Easting').text))),VMS.find('SCN').text])
+			ret.append([VMS.find('Description').text,VMS.find('Message').text,g.OSGB36toWGS84((float(VMS.find('Easting').text)),(float(VMS.find('Northing').text))),VMS.find('SCN').text])
 	return ret
 
 def main():
 	m=folium.Map(location=(52.49087856718512, -1.8801756029242436))
-	
-	for b in get_vms():
-		if b[3][:2]=='BI' or b[3][:2]=='M0':
+	t=get_vms()+bristol.main()
+	for b in t:
+		if b[3][:2]=='BI' or b[3][:2]=='M0' or b[0]=="Null":
 			print b[0]
-			print g.OSGB36toWGS84(b[2][1],b[2][0])
+			print b[2]
 			print b[1].replace('|','\n')
 			print b[3]
 			print
-			pop="<HTML><BODY><B>"+b[3]+"<IMG SRC=\'http://54.164.31.65/board.png?text="+b[1]+"\'></BODY></HTML>"
+			pop="<HTML><BODY><B>"+b[3]+"<BR><IMG SRC='http://54.164.31.65/board.png?text="+b[1].replace("'","")+"'></BODY></HTML>"
 			print pop
+			test=branca.element.Html(pop,script=True)
 			iframe=branca.element.IFrame(html=pop,width=700,height=400)
 			po=folium.Popup(iframe,max_width=700)
-			folium.Marker(g.OSGB36toWGS84(b[2][1],b[2][0]),popup=po).add_to(m)
+			folium.Marker(b[2],popup=po).add_to(m)
 	return m.get_root().render()
 	
 

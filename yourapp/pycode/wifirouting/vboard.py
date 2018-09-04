@@ -16,13 +16,24 @@ def board(letter):
 			if pic[x,y][0]==0:
 				col='yellow'
 			draw.ellipse((((x*8)+2,(y*8)+2),((x*8)+6,(y*8)+6)),fill=col)
-
+			if col=='yellow':
+				draw.ellipse((((x*8)+4,(y*8)+3),((x*8)+5,(y*8)+4)),fill='white')
+			else:
+				draw.ellipse((((x*8)+4,(y*8)+3),((x*8)+5,(y*8)+4)),fill='#444411')
 	return im2
 
 def sentence(words):
+	try:
+		if words[-1]=="|":
+			words=words[:-1]
+	except:
+		words="No Message"
 	words=words.split('|')
+	words=[w.strip(" ") for w in words]
 	j=len(words)
 	l=max([len(x) for x in words])
+	if l==0:
+		l=1
 	pic=Image.new('RGB',((l*56),j*64),'white')
 	v=0
 	for word in words:

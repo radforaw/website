@@ -77,7 +77,8 @@ def main():
 		if zcol>8:
 			zcol=8
 		print zcol
-		jx="<HTML><BODY><IMG SRC=\"http://54.164.31.65/graph.png?scn="+str(tmp[1])+"\"></BODY></HTML>"
+		ii=str(tmp[1])
+		jx="<HTML><BODY><IMG SRC=\"http://54.164.31.65/graph.png?scn="+str(ii)+"\"></BODY></HTML>"
 		iframe=branca.element.IFrame(html=jx,width=660,height=500)
 		po=folium.Popup(iframe,max_width=660)
 		folium.PolyLine(
