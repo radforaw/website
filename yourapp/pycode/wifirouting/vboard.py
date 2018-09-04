@@ -1,7 +1,7 @@
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-import StringIO
+import io
 
 def board(letter):
 	image=Image.new('RGB',(7,8),'white')
@@ -30,10 +30,10 @@ def sentence(words):
 		for x in range(l):
 			pic.paste(board(w[x]),(x*56,v*64))
 		v+=1
-	out=StringIO.StringIO()
+	out=io.BytesIO()
 	pic.save(out,'PNG')
 	
-	return pic
+	return out
 	
 def centrewords(w,l):
 	x=len(w)

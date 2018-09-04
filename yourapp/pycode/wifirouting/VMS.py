@@ -9,6 +9,7 @@ import os
 import andyconfig
 import geometry as g
 import folium
+import branca
 
 def get_vms():
 	url='http://bcc.opendata.onl/UTMC VMS.xml'
@@ -33,7 +34,11 @@ def main():
 			print b[1].replace('|','\n')
 			print b[3]
 			print
-			folium.Marker(g.OSGB36toWGS84(b[2][1],b[2][0]),popup=str(b[1].replace('|','\n'))).add_to(m)
+			pop="<HTML><BODY><B>"+b[3]+"<IMG SRC=\'http://54.164.31.65/board.png?text="+b[1]+"\'></BODY></HTML>"
+			print pop
+			iframe=branca.element.IFrame(html=pop,width=700,height=400)
+			po=folium.Popup(iframe,max_width=700)
+			folium.Marker(g.OSGB36toWGS84(b[2][1],b[2][0]),popup=po).add_to(m)
 	return m.get_root().render()
 	
 
