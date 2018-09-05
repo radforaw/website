@@ -31,23 +31,27 @@ class offset():
 		null=self.add(a,b,off)
 		return self.off(a,b,off)
 
-def main():
-	with open('links.json','r')as jfile:
-		data=json.load(jfile)
-	'''for n in data:
-		print data[n]
-		break'''
+def update(data):
 	update=journeytimeinfo.getwifidata()
 	for x in data:
 		data[x]['Time']=update[x]['Time']
 		data[x]['matched']=update[x]['matched']
 	a=sorted([[data[n][u'distance'],n,data[n]] for n in data if u'distance' in data[n]])
 	offdata=offset()
+	return data
+
+def main(sv='links.json',graph=True):
+	with open(sv,'r')as jfile:
+		data=json.load(jfile)
+	'''for n in data:
+		print data[n]
+		break'''
+
+	data=update(data)
 	map_osm = folium.Map(location=(52.453, -1.788), zoom_start=14)
 	col = ['red', 'green', 'blue']
 	col=['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a']
 	ctr=0
-
 
 
 	for tmp in a:

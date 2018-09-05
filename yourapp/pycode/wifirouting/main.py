@@ -57,11 +57,13 @@ class offset():
 def main():
 	#get data on the links from the portal
 	ret=journeytimeinfo.getwifidata()
+	
+def createlinks(ret,sv='links.json'):
 	# work out how much large the network needs to be
 	x, y = minmax([ret[x]['coordinates'][0] for x in ret] + [ret[x]['coordinates'][1] for x in ret])
 	# update the sampledata if it is out of data
 	old = time.time() - os.path.getmtime('sampledata.pickle')
-	if old > 400060: 
+	if old > 3600: 
 		sampleget.osmcreate(x, y)
 	
 	ctr = 0
@@ -91,7 +93,7 @@ def main():
 
 
 	import json
-	with open ('links.json','w') as jsonfile:
+	with open (sv,'w') as jsonfile:
 		json.dump(ret,jsonfile)
 
 

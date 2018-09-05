@@ -1,2 +1,4 @@
 *.pyc
+*.json
+*.pickle
 nohup.out

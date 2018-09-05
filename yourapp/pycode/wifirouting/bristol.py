@@ -55,7 +55,7 @@ def anpr():
 	root=ET.fromstring(n.content)
 	for a in root.iter(ns+'siteMeasurements'):
 		tmp=a.find(ns+'measurementSiteReference').attrib['id']
-		ret[tmp]['timestamp']=datetime.datetime.strptime(a.find(ns+'measurementTimeDefault').text[:-5],'%Y-%m-%dT%H:%M:%S')
+		ret[tmp]['timestamp']=a.find(ns+'measurementTimeDefault').text[:-5] #datetime.datetime.strptime(a.find(ns+'measurementTimeDefault').text[:-5],'%Y-%m-%dT%H:%M:%S')
 		for b in a.iter(ns+'travelTime'):
 			ret[tmp]['Time']=b.find(ns+'duration').text
 		for b in a.iter(ns+'normallyExpectedTravelTime'):
@@ -95,4 +95,5 @@ def main():
 
 if __name__ == '__main__':
 	#print main()
-	anpr()
+	import main
+	main.createlinks(anpr(),sv='bris.json')
