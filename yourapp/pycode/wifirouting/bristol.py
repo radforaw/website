@@ -31,8 +31,8 @@ except ImportError:
 key={"apikey":"QAPLPKaFokiEkmpv7oFDSw"}
 surl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/vms/status"
 durl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/vms/definition"
-surl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/traveltime/status"
-durl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/traveltime/definition"
+#surl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/traveltime/status"
+#durl="https://highways-bristol.api.urbanthings.io/api/1.0/dynamic/traveltime/definition"
 ns="{http://datex2.eu/schema/2/2_0}"
 
 #'WiFiL8': {'matched': '4', 'Description': 'Tyburn Rd WB E4421 to E4439', 'coordinates': [(52.513136240808485, -1.8279231846372113), (52.51100479248898, -1.8336337387460437)], 'Time': '50'}}
@@ -67,6 +67,9 @@ def anpr():
 def main():
 	defs={}
 	n=requests.get(durl,params=key)
+	print n.content
+	import sys
+	sys.exit(0)
 	root=ET.fromstring(n.content)
 	for a in root.iter(ns+"vmsUnitRecord"):
 		t=a.attrib['id']
@@ -95,5 +98,6 @@ def main():
 
 if __name__ == '__main__':
 	#print main()
-	import main
-	main.createlinks(anpr(),sv='bris.json')
+	print main()
+	#import main
+	#main.createlinks(anpr(),sv='bris.json')
