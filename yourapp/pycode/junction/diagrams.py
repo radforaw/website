@@ -10,11 +10,11 @@ class juncdiag():
 		self.draw.line((399,399,0,399),(0,0,0))
 		self.draw.line((0,399,0,0),(0,0,0))
 	def dirind(self,x,size=40):
-		return [int(math.sin(math.radians(x))*size),int(math.cos(math.radians(x))*size)]
+		return [int(math.sin(math.radians((360-x)%360))*size),int(math.cos(math.radians((360-x)%360))*size)]
 
 	def getthis(self,a,m):
-		direction={'N':0,'NE':45,'E':90,'SE':135,'S':180,'SW':225,'W':270,'NW':315}
-		turn={'SA':0,'L':90,'R':-90,'U':-90}
+		direction={'N':180,'NE':225,'E':270,'SE':315,'S':0,'SW':45,'W':90,'NW':135}
+		turn={'SA':0,'L':-90,'R':90,'U':90}
 		tmp=self.dirind(direction[a])
 		tmp2=self.dirind(direction[a]+turn[m])
 		tmp3=[tmp[0]+(tmp2[0]/2),tmp[1]+(tmp2[1]/2)]
@@ -37,8 +37,8 @@ class juncdiag():
 		self.draw.line(k[1]+k[2],colour,width)
 
 if __name__=="__main__":
-	direction={'N':0,'NE':45,'E':90,'SE':135,'S':180,'SW':225,'W':270,'NW':315}
-	turn={'SA':0,'L':90,'R':-90}
+	direction={'N':180,'NE':225,'E':270,'SE':315,'S':0,'SW':45,'W':90,'NW':135}
+	turn={'SA':0,'L':-90,'R':90}
 
 	n=juncdiag()
 	for a in direction:

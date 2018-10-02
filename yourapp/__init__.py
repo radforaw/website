@@ -8,6 +8,7 @@ import pycode.wifirouting.sortapp as fol
 import pycode.wifirouting.VMS as vmslist
 import pycode.wifirouting.vboard as brd
 import pycode.junction.together as jnc
+import pycode.junction.getmap as gmp
 
 app = Flask(__name__,static_url_path="/static")
 
@@ -21,6 +22,7 @@ def hello():
 	retval+="<LI><i>1-8 are compass points representing <B>from</B> and <B>to</B></i>"
 	retval+="<BR><a href='twenty'>Is my road 20mph?</a>"
 	retval+="<BR><a href='map'>Wifi Map</a>"
+	retval+="<LI><a href='static/aimsun.html'>Aimsun Demo</a>"
 	return retval
 
 @app.route("/stick")
@@ -112,6 +114,17 @@ def junction():
 	args=request.args.to_dict()
 	if 'junc' in args:
 		buf=(jnc.main(int(args['junc'])))
+		buf.seek(0)
+		response = make_response(buf.read())
+		response.headers.set('Content-Type', 'image/png')
+		response.headers.set('Content-Disposition', 'inline')
+		return response
+
+@app.route("/mapdraw.png")
+def mapdraw():
+	args=request.args.to_dict()
+	if 'junc' in args:
+		buf=(gmp.thismap(int(args['junc'])).drawit())
 		buf.seek(0)
 		response = make_response(buf.read())
 		response.headers.set('Content-Type', 'image/png')

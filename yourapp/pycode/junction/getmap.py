@@ -7,7 +7,7 @@ from io import StringIO
 import g
 from math import pi,atan2,sqrt
 import drawer
-
+import StringIO
 	
 def latlonsplit(latr):
 	return float(latr[:2]+'.'+latr[2:])
@@ -122,8 +122,11 @@ class thismap():
 					ang.append(angle(old,y))
 					self.dd.line(old,y,c) 
 					old=y
-				res[n]=ang  
-		return self.dd.image
+				res[n]=ang
+		buf=StringIO.StringIO()
+		self.dd.image.save(buf,format='PNG')
+		return buf
+
 			
 	def directions(self):
 		fin={}
@@ -174,8 +177,8 @@ class thismap():
 			
 if __name__=="__main__":
 	import json
-	numbers=[1991,1992,1994,2111,2112,2130,2105,9999,2115]
-	res={a:thismap(2115).centroid for a in numbers}
+	numbers=[1991,1992,1994,2111,2110,2130,2105,9999,2115,2112]
+	res={a:thismap(a).centroid for a in numbers}
 	with open ('junclocs.json','w') as jsonfile:
 		json.dump(res,jsonfile)
 	
