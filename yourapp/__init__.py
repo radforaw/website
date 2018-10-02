@@ -7,7 +7,7 @@ import pycode.wifirouting.graphs as gph
 import pycode.wifirouting.sortapp as fol
 import pycode.wifirouting.VMS as vmslist
 import pycode.wifirouting.vboard as brd
-
+import pycode.junction.together as jnc
 
 app = Flask(__name__,static_url_path="/static")
 
@@ -101,6 +101,17 @@ def board():
 	if 'text' in args:
 		print (args)
 		buf=(brd.sentence(args['text']))
+		buf.seek(0)
+		response = make_response(buf.read())
+		response.headers.set('Content-Type', 'image/png')
+		response.headers.set('Content-Disposition', 'inline')
+		return response
+
+@app.route("/junction.png")
+def junction():
+	args=request.args.to_dict()
+	if 'junc' in args:
+		buf=(jnc.main(int(args['junc'])))
 		buf.seek(0)
 		response = make_response(buf.read())
 		response.headers.set('Content-Type', 'image/png')

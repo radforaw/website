@@ -2,3 +2,4 @@
 *.json
 *.pickle
 nohup.out
+*.p

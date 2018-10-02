@@ -1,6 +1,6 @@
 import requests
 import time
-import location
+#import location
 #import motion
 from math import sqrt, pi, sin, cos, tan, atan2
 
