@@ -9,6 +9,7 @@ import pycode.wifirouting.VMS as vmslist
 import pycode.wifirouting.vboard as brd
 import pycode.junction.together as jnc
 import pycode.junction.getmap as gmp
+import pycode.junction.elgintest as stwk
 
 app = Flask(__name__,static_url_path="/static")
 
@@ -130,3 +131,15 @@ def mapdraw():
 		response.headers.set('Content-Type', 'image/png')
 		response.headers.set('Content-Disposition', 'inline')
 		return response
+
+@app.route("/streetworks.png")
+def streetworks():
+	args=request.args.to_dict()
+	if 'days' in args:
+		buf=stwk.showgraph(days=int(args['days']))
+	else:
+		buf=stwk.showgraph()
+	response = make_response(buf)
+	response.headers.set('Content-Type', 'image/png')
+	response.headers.set('Content-Disposition', 'inline')
+	return response
