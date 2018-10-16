@@ -14,7 +14,7 @@ class offset():
 	def __init__(self):
 		self.c=defaultdict(int)
 		
-	def add(self,a,b,off=0.0024):
+      	def add(self,a,b,off=0.0024):
 		self.c[(a,b)]+=1
 		#print [str(a)[-3:-1],self.c[(a,b)]],
 		off*=self.c[(a,b)]
@@ -34,11 +34,15 @@ class offset():
 def update(data):
 	update=journeytimeinfo.getwifidata()
 	for x in data:
-		data[x]['Time']=update[x]['Time']
-		data[x]['matched']=update[x]['matched']
+		try:
+			data[x]['Time']=update[x]['Time']
+			data[x]['matched']=update[x]['matched']
+		except KeyError:
+                        data[x]['Time']=100000
+ 	                data[x]['matched']=0
+
 	a=sorted([[data[n][u'distance'],n,data[n]] for n in data if u'distance' in data[n]])
-	offdata=offset()
-	return data
+	return a
 
 def main(sv='links.json',graph=True):
 	with open(sv,'r')as jfile:
@@ -52,10 +56,10 @@ def main(sv='links.json',graph=True):
 	col = ['red', 'green', 'blue']
 	col=['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a']
 	ctr=0
+	offdata=offset()
 
+	for tmp in data:
 
-	for tmp in a:
-		#print tmp
 		print tmp[2][u'Description'],
 		mx=[offdata.add(tmp[2][u'route'][x][0],tmp[2][u'route'][x][1],40) for x in range(len(tmp[2][u'route']))]
 		mx=max(mx)

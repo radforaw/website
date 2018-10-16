@@ -114,13 +114,15 @@ def showgraph(days=56):
 					workdays2[n]+=1
 				if d['severity']=='high':
 					workdays3[n]+=1
+	plt.style.use('bcc')
+	csfont={'fontname':'montserrat', 'fontsize':'medium'}
 	p1=plt.bar(range(days),[workdays1[n]+workdays2[n]+workdays3[n] for n in range(days)])
 	p2=plt.bar(range(days),[workdays2[n]+workdays3[n] for n in range(days)])
 	p3=plt.bar(range(days),[workdays3[n] for n in range(days)])
 	plt.legend((p1[0],p2[0],p3[0]),('low','medium','high'), title='Severity')
-	plt.title('City Centre Planned Streetworks Next '+str(days)+' Days')
-	plt.xlabel('Number of days from today')
-	plt.ylabel('Streetworks')
+	plt.title('City Centre Planned Streetworks Next '+str(days)+' Days',**csfont)
+	plt.xlabel('Number of days from today',**csfont)
+	plt.ylabel('Streetworks',**csfont)
 	imgdata=StringIO.StringIO()
 	plt.savefig(imgdata,format='png')
 	imgdata.seek(0)
