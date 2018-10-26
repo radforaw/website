@@ -1,6 +1,8 @@
 from __future__ import print_function
 from flask import Flask
 from flask import make_response, request
+import time
+import os
 
 import pycode
 import pycode.wifirouting.graphs as gph
@@ -15,15 +17,20 @@ app = Flask(__name__,static_url_path="/static")
 
 @app.route("/")
 def hello():
-	retval="<center><H1>Welcome to my page</H1><BR>"
+	
+	retval='<HEAD><!DOCTYPE html><html lang="en">'
+	retval+='<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">'
+	retval+='<meta name="viewport" content="width=device-width, initial-scale=1"></HEAD>'
+	retval+="<BODY><center><H1>Welcome to my page</H1><BR>"
 	retval+="<H3>Menu</H3><P>"
 	retval+="<a href='stick?v1=15&v2=62'>Stick Diagrams</a>"
 	retval+="<BR><i>syntax = <B>/stick?v1=18&v2=24</B>"
 	retval+="<LI><i>where v is <B>vehicle number</b>"
-	retval+="<LI><i>1-8 are compass points representing <B>from</B> and <B>to</B></i>"
+	retval+="<LI><i>1-8 are compass points representing <B>from</B> and <B>to</B></i><BR><BR>"
 	retval+="<BR><a href='twenty'>Is my road 20mph?</a>"
 	retval+="<BR><a href='map'>Wifi Map</a>"
-	retval+="<LI><a href='static/aimsun.html'>Aimsun Demo</a>"
+	retval+="<BR><a href='static/aimsun.html'>TTF Demo</a>"
+	retval+="</Body></html>"
 	return retval
 
 @app.route("/stick")
@@ -143,3 +150,12 @@ def streetworks():
 	response.headers.set('Content-Type', 'image/png')
 	response.headers.set('Content-Disposition', 'inline')
 	return response
+	
+@app.route("/temp")
+def temperature():
+	print (os.getcwd())
+	args=request.args.to_dict()
+	if 'current' in args:
+		with open("tmplist.txt","a+") as openfile:
+			openfile.write(str(time.time())+","+str(args['current']+"\n"))
+	return "Thanks!"
