@@ -1,6 +1,6 @@
 from __future__ import print_function
 from flask import Flask
-from flask import make_response, request
+from flask import make_response, request, render_template
 import time
 import os
 
@@ -17,21 +17,7 @@ app = Flask(__name__,static_url_path="/static")
 
 @app.route("/")
 def hello():
-	
-	retval='<HEAD><!DOCTYPE html><html lang="en">'
-	retval+='<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">'
-	retval+='<meta name="viewport" content="width=device-width, initial-scale=1"></HEAD>'
-	retval+="<BODY><center><H1>Welcome to my page</H1><BR>"
-	retval+="<H3>Menu</H3><P>"
-	retval+="<a href='stick?v1=15&v2=62'>Stick Diagrams</a>"
-	retval+="<BR><i>syntax = <B>/stick?v1=18&v2=24</B>"
-	retval+="<LI><i>where v is <B>vehicle number</b>"
-	retval+="<LI><i>1-8 are compass points representing <B>from</B> and <B>to</B></i><BR><BR>"
-	retval+="<BR><a href='twenty'>Is my road 20mph?</a>"
-	retval+="<BR><a href='map'>Wifi Map</a>"
-	retval+="<BR><a href='static/aimsun.html'>TTF Demo</a>"
-	retval+="</Body></html>"
-	return retval
+	return render_template("base.html")
 
 @app.route("/stick")
 def stick():
@@ -159,3 +145,8 @@ def temperature():
 		with open("tmplist.txt","a+") as openfile:
 			openfile.write(str(time.time())+","+str(args['current']+"\n"))
 	return "Thanks!"
+@app.route("/tempget")
+def tempget():
+	with open("tmplist.txt","r") as fl:
+		ret=fl.read()
+	return ret
