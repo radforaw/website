@@ -25,4 +25,5 @@ The other links do the following:
 * arrows - this is not an open data service. This takes data from the stats 19 accident information service and processes it to show which direction the vehicles moving in when the accident occurred. It basically provides two arrows so you can see if it was a head-on collision side collision or a rear end shunt.
 * Street works - this shows a simple graph of the Street Works register showing the number of works that are due to take place within Birmingham city centre over the next 56 days.
 
-# worst junctions. The worst  junctions link on the right-hand side provides a list of the worst junctions for bus delays calculated based on the length of the delay and intensity. A handy five-star rating system is provided.
+# Worst junctions
+The worst  junctions link on the right-hand side provides a list of the worst junctions for bus delays calculated based on the length of the delay and intensity. A handy five-star rating system is provided.
