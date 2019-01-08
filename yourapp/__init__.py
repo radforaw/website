@@ -3,6 +3,8 @@ from flask import Flask
 from flask import make_response, request, render_template
 import time
 import os
+import csv
+import datetime
 
 import pycode
 import pycode.wifirouting.graphs as gph
@@ -12,6 +14,8 @@ import pycode.wifirouting.vboard as brd
 import pycode.junction.together as jnc
 import pycode.junction.getmap as gmp
 import pycode.junction.elgintest as stwk
+import pycode.buses.tomsgraph as tgph
+
 
 app = Flask(__name__,static_url_path="/static")
 
@@ -144,9 +148,47 @@ def temperature():
 	if 'current' in args:
 		with open("tmplist.txt","a+") as openfile:
 			openfile.write(str(time.time())+","+str(args['current']+"\n"))
-	return "Thanks!"
+	if 'humid' in args:
+		with open("humlist.txt","a+") as openfile:
+			openfile.write(str(time.time())+","+str(args['humid']+"\n"))
+	return "Thanks"
+
+
+@app.route("/humget")
+def humget():
+	with open("humlist.txt","r") as fl:
+		ret=fl.read()
+	return ret
+
 @app.route("/tempget")
 def tempget():
 	with open("tmplist.txt","r") as fl:
 		ret=fl.read()
 	return ret
+	
+@app.route("/worst")
+def worst():
+	fileloc='/home/ubuntu/website/website/yourapp/static/'
+	with open(fileloc+"tesfile.csv","r") as csvfile:
+		reader=csv.reader(csvfile)
+		reader.next()
+		passer=[]
+		for row in reader:
+			n=datetime.datetime.strptime(row[1]+" 2018","%a, %d %b %Y")
+			print (n)
+			j=int((datetime.datetime.now()-n).total_seconds()/84600)
+			print (j)
+			passer.append(row + [str(j)])
+	return render_template('tables.html', posts=passer)
+
+@app.route("/tom.png")
+def tom():
+	args=request.args.to_dict()
+	buf=tgph.dailygraph(args['route'],int(args['day']))
+	buf.seek(0)
+	response = make_response(buf.read())
+	response.headers.set('Content-Type', 'image/png')
+	response.headers.set('Content-Disposition', 'inline')
+	return response
+	
+	
