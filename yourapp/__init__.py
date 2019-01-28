@@ -177,11 +177,11 @@ def worst():
 		reader.next()
 		passer=[]
 		for row in reader:
-			n=datetime.datetime.strptime(row[1]+" 2018","%a, %d %b %Y")
-			print (n)
+			n=datetime.datetime.strptime(str(row[1])+" "+str(row[6]),"%a, %d %b %Y")
 			j=int((datetime.datetime.now()-n).total_seconds()/84600)
 			print (j)
 			passer.append(row + [str(j)])
+		print (passer)
 	return render_template('tables.html', posts=passer)
 
 @app.route("/tom.png")
