@@ -26,7 +26,7 @@
     </thead>
     <tbody>
 {% for post in posts%}
-  <tr><td><a href={{"http://www.bcctraffic.co.uk/tom.png?route="+post[0]+"&day="+post[6]}}>
+  <tr><td><a href={{"http://www.bcctraffic.co.uk/tom.png?route="+post[0]+"&day="+post[7]}}>
   {{post[0]}}</a><td>{{post[1]}}<td>{{post[2]}}<td>{{post[3]}}<td>{{post[4]}}<td>
     {%set number= post[5]|int %}
     {% for stars in range(number)%}
