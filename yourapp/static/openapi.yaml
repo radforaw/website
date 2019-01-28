@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  description: "I'm literally just trying this out."
+  version: "1.0.0"
+  title: "BCC Traffic and Parking API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "nobody@nobody.com"
+  license:
+    name: "OGL"
+    url: "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+servers:
+  - url: http://bcc.opendata.onl/
+    description: main server
+paths:
+  /UTMC Flow.xml:
+    get:
+      parameters:
+      - in: query
+        name: "SCN"
+        schema:
+          type: string
+        description: "This is a unique reference number of each traffic flow detector. Run this query with no parameters to get a list of all possible SCN's that work with this query"
+      - in: query
+        name: "TS"
+        schema:
+          type: boolean
+        description: "Time Series. If false, this query returns just the most recent data. If true, this initiates a time series query which provides historic data from the requested sensor. Complete the parameters below to specify what data is provided."
+      - in: query
+        name: "Earliest"
+        schema:
+          type: string
+          format: date
+        description: "This specifies data from 00:00 on the earliest date"
+      - in: query
+        name: "Latest"
+        schema:
+          type: string
+          format: date
+        description: "This specifies the 00:00 on the end date. To receive data from the end date itself, add a day to the query."
+      - in: query
+        name: "NullDataPoints"
+        schema:
+          type: booleanopenapi: 3.0.0
+info:
+  description: "I'm literally just trying this out."
+  version: "1.0.0"
+  title: "BCC Traffic and Parking API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "nobody@nobody.com"
+  license:
+    name: "OGL"
+    url: "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+servers:
+  - url: http://bcc.opendata.onl/
+    description: main server
+paths:
+  /UTMC Flow.xml:
+    get:
+      parameters:
+      - in: query
+        name: "SCN"
+        schema:
+          type: string
+        description: "This is a unique reference number of each traffic flow detector. Run this query with no parameters to get a list of all possible SCN's that work with this query"
+      - in: query
+        name: "TS"
+        schema:
+          type: boolean
+        description: "Time Series. If false, this query returns just the most recent data. If true, this initiates a time series query which provides historic data from the requested sensor. Complete the parameters below to specify what data is provided."
+      - in: query
+        name: "Earliest"
+        schema:
+          type: string
+          format: date
+        description: "This specifies data from 00:00 on the earliest date"
+      - in: query
+        name: "Latest"
+        schema:
+          type: string
+          format: date
+        description: "This specifies the 00:00 on the end date. To receive data from the end date itself, add a day to the query."
+      - in: query
+        name: "NullDataPoints"
+        schema:
+          type: boolean
+        description: "Attempts to fill data gaps true or false"
+      tags:
+      - "Traffic Flows"
+      summary: "Data on traffic flows from sensors on the road network"
+      description: "The data comes from sensors located on the road network, which are broadcast back to the BCC database. Data is updates every 5 minutes. Sensors are of a range of differing types - SCOOT sensors is data from traffic 'loop' counters and are usuall of the format N???? (this usually provides a near 100% sample of traffic flow, however the sensors are less successful at counting when traffic is very slow or stopped), JTMS prefixed data is the count of numberplates counted by ANPR cameras (representing about 90% of the traffic flow at that locations), Wifi is the count of MAC addresses counted by a wifi sensor (representing a much lower sample of the traffic flow)"
+      responses:
+        200:
+          description: "successful operation"
+        404:
+          description: "failed"
+ 
+ 
+components:
+  securitySchemes:
+    ApiKeyAuth:        # arbitrary name for the security scheme
+      type: apiKey
+      in: query       # can be "header", "query" or "cookie"
+      name: ApiKey  # name of the header, query parameter or cookie
+# 2) Apply the API key globally to all operations
+security:
+  - ApiKeyAuth: [] 
+ 
+​
+        description: "Attempts to fill data gaps true or false"
+      tags:
+      - "Traffic Flows"
+      summary: "Data on traffic flows from sensors on the road network"
+      description: "The data comes from sensors located on the road network, which are broadcast back to the BCC database. Data is updates every 5 minutes. Sensors are of a range of differing types - SCOOT sensors is data from traffic 'loop' counters and are usuall of the format N???? (this usually provides a near 100% sample of traffic flow, however the sensors are less successful at counting when traffic is very slow or stopped), JTMS prefixed data is the count of numberplates counted by ANPR cameras (representing about 90% of the traffic flow at that locations), Wifi is the count of MAC addresses counted by a wifi sensor (representing a much lower sample of the traffic flow)"
+      responses:
+        200:
+          description: "successful operation"
+        404:
+          description: "failed"
+ 
+ 
+components:
+  securitySchemes:
+    ApiKeyAuth:        # arbitrary name for the security scheme
+      type: apiKey
+      in: query       # can be "header", "query" or "cookie"
+      name: ApiKey  # name of the header, query parameter or cookie
+# 2) Apply the API key globally to all operations
+security:
+  - ApiKeyAuth: [] 

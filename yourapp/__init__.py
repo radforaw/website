@@ -1,6 +1,7 @@
 from __future__ import print_function
 from flask import Flask
 from flask import make_response, request, render_template
+from flask_cors import CORS
 import time
 import os
 import csv
@@ -15,9 +16,11 @@ import pycode.junction.together as jnc
 import pycode.junction.getmap as gmp
 import pycode.junction.elgintest as stwk
 import pycode.buses.tomsgraph as tgph
+import pycode.elgin.elgin as elg
 
 
 app = Flask(__name__,static_url_path="/static")
+cors=CORS(app,resources={r"*":{"origins":"*"}})
 
 @app.route("/")
 def hello():
@@ -191,4 +194,17 @@ def tom():
 	response.headers.set('Content-Disposition', 'inline')
 	return response
 	
+@app.route("/roadworks.xml")
+def rdwk():
+	response = make_response(elg.cache())
+	response.headers.set('Content-Type', 'text/xml')
+	return response
 	
+@app.route("/doc")
+def doc():
+	response = make_response(render_template("apidoctest.html"))
+	response.headers.add('Access-Control-Allow-Origin',"*")
+	response.headers.add('Access-Control-Allow-Origin',"GET, POST, OPTIONS")
+	response.headers.add('Access-Control-Allow-Headers',"Origin, Content-Type")
+	return response
+		
