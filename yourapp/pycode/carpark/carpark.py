@@ -6,7 +6,9 @@ except ImportError:
 	import xml.etree.cElementTree as ET
 import datetime
 import matplotlib as mpl
-mpl.use( 'Agg')
+import matplotlib.style
+mpl.use('Agg')
+mpl.style.use('classic')
 import matplotlib.pyplot as plt
 import io
 
@@ -46,16 +48,18 @@ class carpark:
 		#ax.spines['bottom'].set_visible(False)
 		#ax.spines['left'].set_visible(False)
 		plt.legend(['Capacity','Occupancy'], loc='lower right')
-		plt.title('Birmingham City Centre Car Parks\nStatus at '+str(datetime.datetime.now()))
+		#plt.title('Birmingham City Centre Car Parks\nStatus at '+str(datetime.datetime.now()))
 		f=io.BytesIO()
-		plt.savefig(f,format='png')
+		plt.savefig(f,format='png',bbox_inches='tight')
 		f.seek(0)
 		bars = [rect for rect in plt.gca().get_children() if isinstance(rect, mpl.patches.Rectangle)]
-		
-		t=([[*a.get_xy(),a.get_height(),a.get_width()] for a in bars])
+		#print (a.get_xy())
+		t=([[a.get_xy()[0],a.get_xy()[1],a.get_height(),a.get_width()] for a in bars])
+		print (t)
 		res=[list(plt.gca().transData.transform((l[0],l[1])))+list(plt.gca().transData.transform((l[0]+l[3],l[1]+l[2]))) for l in t][:len(tcp)]
 		#res.reverse()
-		res={tcp[n][4]:[int(res[n][0]),int(res[n][1]),int(res[n][2]),int(res[n][3])]for n in range(len(res))}
+		print (res)
+		res={tcp[n][4]:[int(res[n][0]),520-int(res[n][1]),int(res[n][2]),520-int(res[n][3])]for n in range(len(res))}
 		print(res)
 		#ax.transData.transform((5, 0))
 		#plt.savefig('test.png')
@@ -114,18 +118,18 @@ a.close()
 
 import os
 fl='file://'+os.path.abspath('file.png')
-
+fl="file.png"
 
 site='<!DOCTYPE html><html><head><title>very much under test</title></head><body>some text<img src="'+fl+'" alt="graph" usemap="#graphmap"><map name="graphmap">'
 for n in b:
 	m=n.replace(' ','%20')
-	site+='<area shape="rect" coords="'+str(b[n][0])+','+str(b[n][1])+','+str(b[n][2])+','+str(b[n][3])+'" href="cphist.htm?park='+m+'" alt="'+m+'">'
+	site+='<area shape="rect" coords="'+str(b[n][0])+','+str(b[n][1])+','+str(b[n][2])+','+str(b[n][3])+'" href='+m+'" alt="'+m+'">'
 
 site+='</map></body></html>'
 
 with open('site.html','w') as r:
 	r.write(site)
-
+'''
 import ui,os
 from urllib.parse import urljoin
 file_path = 'site.html'
@@ -133,3 +137,4 @@ file_path = 'site.html'
 w = ui.WebView()
 w.load_html(site)
 w.present()
+'''
