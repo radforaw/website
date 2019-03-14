@@ -4,3 +4,4 @@
 *.pickle
 nohup.out
 *.p
+*.db
