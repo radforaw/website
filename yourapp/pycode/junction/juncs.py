@@ -226,6 +226,7 @@ import sys
 print half([100,100],[0,0])
 
 url='https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A25%5D%3Barea%283600162378%29%2D%3E%2EsearchArea%3B%28node%5B%22highway%22%3D%22traffic%5Fsignals%22%5D%28area%2EsearchArea%29%3Bway%5B%22highway%22%3D%22traffic%5Fsignals%22%5D%28area%2EsearchArea%29%3Brelation%5B%22highway%22%3D%22traffic%5Fsignals%22%5D%28area%2EsearchArea%29%3B%29%3Bout%3B%3E%3Bout%20skel%20qt%3B%0A'
+url='https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A25%5D%3B%28node%5B%22highway%22%3D%22traffic%5Fsignals%22%5D%2852%2E46228526678%2C%2D1%2E9274139404297%2C52%2E494382825995%2C%2D1%2E8735980987549%29%3Bway%5B%22highway%22%3D%22traffic%5Fsignals%22%5D%2852%2E46228526678%2C%2D1%2E9274139404297%2C52%2E494382825995%2C%2D1%2E8735980987549%29%3Brelation%5B%22highway%22%3D%22traffic%5Fsignals%22%5D%2852%2E46228526678%2C%2D1%2E9274139404297%2C52%2E494382825995%2C%2D1%2E8735980987549%29%3Bnode%5B%22crossing%22%3D%22traffic%5Fsignals%22%5D%2852%2E46228526678%2C%2D1%2E9274139404297%2C52%2E494382825995%2C%2D1%2E8735980987549%29%3Bway%5B%22crossing%22%3D%22traffic%5Fsignals%22%5D%2852%2E46228526678%2C%2D1%2E9274139404297%2C52%2E494382825995%2C%2D1%2E8735980987549%29%3Brelation%5B%22crossing%22%3D%22traffic%5Fsignals%22%5D%2852%2E46228526678%2C%2D1%2E9274139404297%2C52%2E494382825995%2C%2D1%2E8735980987549%29%3B%29%3Bout%3B%3E%3Bout%20skel%20qt%3B%0A'
 
 x=requests.get(url)
 print x.content[:1000]
@@ -242,7 +243,7 @@ for n in x.json()['elements']:
 res=list(set(res))
 print res
 s=0
-while s<80 or len(res)<2:
+while s<50 or len(res)<2:
 	t=len(res)
 	print t
 	found=min([[qdist(res[x],res[y]),x,y]for x in range(t) for y in range(x+1,t)])
@@ -258,8 +259,8 @@ while s<80 or len(res)<2:
 #	print math.sqrt(n[0])
 
 
-with open('try.json','w') as thing:
-	json.dump(res,thing)
+#with open('try.json','w') as thing:
+#	json.dump(res,thing)
 
 #print sorted(rolt,key=lambda xx:xx[0])[:20]
 import folium
@@ -273,6 +274,7 @@ map_osm = folium.Map(location=(52.453, -1.788), zoom_start=14)
 for n in res:
 	folium.Marker(OSGB36toWGS84(n[0],n[1])).add_to(map_osm)
 
+map_osm.save('tet.html')
 
 import sys,os, StringIO
 if sys.platform=='ios':

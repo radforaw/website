@@ -57,6 +57,7 @@ class offset():
 def main():
 	#get data on the links from the portal
 	ret=journeytimeinfo.getwifidata()
+	print ret
 	
 def createlinks(ret,sv='links.json'):
 	# work out how much large the network needs to be
