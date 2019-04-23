@@ -17,6 +17,7 @@ def get_vms():
 	n=requests.get(url,params={'ApiKey':os.environ['ALKEY']})
 	root=ET.fromstring(n.content)
 	ret=[]
+	print (n.content)
 	#print root('VMS_State')
 	for VMS in root.iterfind('VMS'):
 		tmp=datetime.datetime.strptime(VMS.find("Date").text,'%Y-%m-%d %H:%M:%S')
@@ -27,7 +28,7 @@ def get_vms():
 
 def main():
 	m=folium.Map(location=(52.49087856718512, -1.8801756029242436))
-	t=get_vms()+bristol.main()
+	t=get_vms() #+bristol.main()
 	for b in t:
 		if b[3][:2]=='BI' or b[3][:2]=='M0' or b[0]=="Null":
 			print b[0]
