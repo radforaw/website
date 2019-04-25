@@ -62,7 +62,7 @@ def graph(loc='R0199D1L0'):
 	print (datetime.datetime.now())
 	ret=[]
 	x=RTEM()
-	data= x.findhistoricdata("R0199D1L0")
+	data= x.findhistoricdata(loc,end=str((datetime.datetime.now()+datetime.timedelta(days=1)).date()),start=str(datetime.datetime.now().date()-datetime.timedelta(days=0)))
 	mov=[data[y]['Speed'] for y in data]
 	t=[x for x in data]
 	mov=[0 if x>127 else x for x in mov]
