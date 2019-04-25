@@ -59,30 +59,33 @@ class RTEM():
 		#	hello.write(n.content)
 		
 def graph(loc='R0199D1L0'):
-		ret=[]
-		x=RTEM()
-		data= x.findhistoricdata("R0199D1L0")
-		mov=[data[y]['Speed'] for y in data]
-		t=[x for x in data]
-		mov=[0 if x>127 else x for x in mov]
-		plt.plot(t,mov,linestyle='None',marker='o')
-		plt.title('Speed '+loc+'\n'+str(t[-1]))
-		img=io.BytesIO()
-		plt.savefig(img)
-		img.seek(0)
-		ret.append(img)
-		plt.close()
-		mov=[data[y]['Cars'] for y in data]
-		t=[x for x in data]
-		mov=[0 if x>127 else x for x in mov]
-		plt.plot(t,mov,linestyle='None',marker='o')
-		plt.title('Cars '+loc+'\n'+str(t[-1]))
-		img=io.BytesIO()
-		plt.savefig(img)
-		img.seek(0)
-		ret.append(img)
-		plt.close()
-		return ret
+	print (datetime.datetime.now())
+	ret=[]
+	x=RTEM()
+	data= x.findhistoricdata("R0199D1L0")
+	mov=[data[y]['Speed'] for y in data]
+	t=[x for x in data]
+	mov=[0 if x>127 else x for x in mov]
+	plt.plot(t,mov,linestyle='None',marker='o')
+	#plt.xticks(range(len(t)),[str(tt.time()) for tt in sorted(t)],rotation='vertical')
+	plt.title('Speed '+loc+'\n'+str(max(t).time()))
+	img=io.BytesIO()
+	plt.savefig(img)
+	img.seek(0)
+	ret.append(img)
+	plt.close()
+	mov=[data[y]['Cars'] for y in data]
+	#t=[x for x in data]
+	mov=[0 if x>127 else x for x in mov]
+	plt.plot(t,mov,linestyle='None',marker='o')
+	#plt.xticks(range(len(t)),[str(tt.time()) for tt in sorted(t)],rotation='vertical')
+	plt.title('Cars '+loc+'\n'+str(max(t).time()))
+	img=io.BytesIO()
+	plt.savefig(img)
+	img.seek(0)
+	ret.append(img)
+	plt.close()
+	return ret
 
 if __name__=='__main__':
 	from PIL import Image

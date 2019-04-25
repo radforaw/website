@@ -17,7 +17,7 @@ import pycode.junction.getmap as gmp
 import pycode.junction.elgintest as stwk
 import pycode.buses.tomsgraph as tgph
 import pycode.elgin.elgin as elg
-
+import pycode.rtem.primark as pri
 
 app = Flask(__name__,static_url_path="/static")
 cors=CORS(app,resources={r"*":{"origins":"*"}})
@@ -155,6 +155,12 @@ def temperature():
 		with open("humlist.txt","a+") as openfile:
 			openfile.write(str(time.time())+","+str(args['humid']+"\n"))
 	return "Thanks"
+
+@app.route("/rtem")
+def rtem():
+	response=make_response(pri.graph()[0].read())
+	response.headers.set('Content-Type', 'image/png')
+	return response
 
 
 @app.route("/humget")
