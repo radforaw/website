@@ -21,7 +21,7 @@ def get_vms():
 	#print root('VMS_State')
 	for VMS in root.iterfind('VMS'):
 		tmp=datetime.datetime.strptime(VMS.find("Date").text,'%Y-%m-%d %H:%M:%S')
-		now=datetime.datetime.now()-datetime.timedelta(days=28)
+		now=datetime.datetime.now()-datetime.timedelta(days=356)
 		if tmp>now and len(VMS.find('SCN').text)<20 and VMS.find('Message').text:
 			ret.append([VMS.find('Description').text,VMS.find('Message').text,g.OSGB36toWGS84((float(VMS.find('Easting').text)),(float(VMS.find('Northing').text))),VMS.find('SCN').text])
 	return ret
