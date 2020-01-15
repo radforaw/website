@@ -7,6 +7,7 @@ import datetime
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import io
 
 
@@ -22,18 +23,19 @@ class RTEM():
 	
 	def sites_get(self):
 		ret=set()
-		for n in self.data['RTEMS']['RTEM']:
-			ret.add(n['SCN']['Site'])
+		for n in self.data['RTEMS']['kids']:
+			ret.add(self.data['RTEMS']['kids'][n]['kids']['SCN']['attrs']['Site'])
 		return ret
 	
 	def findcurrentdata(self,site,removezeroes=False):
 		ret=[]
-		for n in self.data['RTEMS']['RTEM']:
-			if n['SCN']['Site']==site:
+		for n in self.data['RTEMS']['kids']:
+			b=self.data['RTEMS']['kids'][n]['kids']
+			if int(b['SCN']['attrs']['Site'])==site:
 				if removezeroes:
-					if n['Speed']+n['Cars']+n['Trailers']+n['Rigids']+n['Buses']==0:
+					if float(b['Speed'])+float(b['Cars'])+float(b['Trailers'])+float(b['Rigids'])+float(b['Buses'])==0:
 						continue
-				ret.append([n['SCN']['content'], n['Speed'],n['Cars']+n['Trailers']+n['Rigids']+n['Buses'], int((datetime.datetime.now()-datetime.datetime.strptime(n['Date'],"%Y-%m-%d %H:%M:%S")).total_seconds()/60)])
+				ret.append([b['SCN']['value'], float(b['Speed']),float(b['Cars']),float(b['Trailers'])+float(b['Rigids'])+float(b['Buses']), int((datetime.datetime.now()-datetime.datetime.strptime(b['Date'],"%Y-%m-%d %H:%M:%S")).total_seconds()/60),b['Date']])
 		return ret
 						
 	def findhistoricdata(self,site,end=str((datetime.datetime.now()+datetime.timedelta(days=1)).date()),start=str(datetime.datetime.now().date()-datetime.timedelta(days=0)),removezeroes=False):
@@ -42,17 +44,22 @@ class RTEM():
 		
 		n=requests.get(url)
 		res=n.json()
+		#print (n.content[:1000])
 		#print (res['RTEMs']['Data']['Speed'])
 		data=[]
 		names=[]
-		for n in res['RTEMs']['Data']:
-			names.append(n)
-			data.append(res['RTEMs']['Data'][n])
-		d = [[data[j][i] for j in range(len(data))] for i in range(len(data[0]))]
-		tmp=[]
-		for n in d:
-			tmp.append({names[a]:n[a] for a in range(len(data))})
-		d={datetime.datetime.strptime(a['Date'],"%Y-%m-%d %H:%M:%S"):a for a in tmp}	
+		for n in res['RTEMs']['kids']:
+			b=res['RTEMs']['kids'][n]['kids']
+			names.append(b['SCN']['value'])
+			data.append(b)
+		#print ([i for i in data[0]])
+		#d = [[data[j][i] for i in data[0]] for j in range(len(data))] #range(len(data[0]))]
+		#print (d)
+		d=data
+		#tmp=[]
+		#for n in d:
+		#	tmp.append({names[a]:n[a] for a in range(len(data))})
+		d={datetime.datetime.strptime(d[a]['Date'],"%Y-%m-%d %H:%M:%S"):d[a] for a in range(len(d))}	
 		return d
 		
 		#with open('deletethis.txt','w') as hello:
@@ -63,21 +70,33 @@ def graph(loc='R0199D1L0'):
 	ret=[]
 	x=RTEM()
 	data= x.findhistoricdata(loc,end=str((datetime.datetime.now()+datetime.timedelta(days=1)).date()),start=str(datetime.datetime.now().date()-datetime.timedelta(days=0)))
-	mov=[data[y]['Speed'] for y in data]
+	mov=[float(data[y]['Speed']) for y in data]
+	#print (mov)
 	t=[x for x in data]
 	mov=[0 if x>127 else x for x in mov]
+	plt.figure(figsize=(10,7))
 	plt.plot(t,mov,linestyle='None',marker='o')
 	#plt.xticks(range(len(t)),[str(tt.time()) for tt in sorted(t)],rotation='vertical')
+	myFmt=mdates.DateFormatter('%H:%M')
+	plt.gca().xaxis.set_major_formatter(myFmt)
+	hours=mdates.HourLocator(interval=1)
+	plt.gca().xaxis.set_major_locator(hours)
+	plt.gca().set_axisbelow(True)
+	plt.gca().yaxis.grid(color='gray',linestyle='dashed')
+	plt.gca().xaxis.grid(color='gray',linestyle='dashed')
+	plt.xticks(rotation=90)
 	plt.title('Speed '+loc+'\n'+str(max(t).time()))
 	img=io.BytesIO()
-	plt.savefig(img)
+	plt.savefig(img,dpi=150)
 	img.seek(0)
 	ret.append(img)
 	plt.close()
-	mov=[data[y]['Cars'] for y in data]
+	mov=[float(data[y]['Vehicles']) for y in data]
 	#t=[x for x in data]
 	mov=[0 if x>127 else x for x in mov]
 	plt.plot(t,mov,linestyle='None',marker='o')
+	myFmt=mdates.DateFormatter('%H:%M')
+	plt.gca().xaxis.set_major_formatter(myFmt)
 	#plt.xticks(range(len(t)),[str(tt.time()) for tt in sorted(t)],rotation='vertical')
 	plt.title('Cars '+loc+'\n'+str(max(t).time()))
 	img=io.BytesIO()

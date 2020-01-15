@@ -43,8 +43,8 @@ def OsmRouteImport(imported):
 	simpledict={}
 	ctr=1
 	for m in root.findall('node'):
-		x, y = geometry.deg2num(
-			float(m.attrib['lat']), float(m.attrib['lon']), zoom=ZM)
+		x, y = geometry.WGS84toOSGB36(
+			float(m.attrib['lat']), float(m.attrib['lon'])) #, zoom=ZM)
 		simpledict[int(m.attrib['id'])]=ctr
 		nodes[ctr]= [x, y]
 		ctr+=1
@@ -182,7 +182,7 @@ def circle(sides, size, centre=(0, 0)):
 def getlocsa(pos, nodes, lines, origang):
 	j=[]
 	for n in lines:
-		p=list(pos)+[0.015]
+		p=list(pos)+[100.0]
 		lsp=nodes[n[0]]
 		esp=nodes[n[1]]
 		t=FindLineCircleIntersections(p,lsp,esp)
@@ -268,16 +268,31 @@ class osmmap():
 			pickle.dump(self.cache, picfile)
 
 def setupshortest(plt, ln, plt1, ln1, t, b, a, origang):
+	'''
+	a is the network (i.e n)
+	b is the nodes (i.e. nodes)
+	ln is the point nearest to the start node
+	ln1 is the point nearest to the end node
+	plt is start point
+	plt1 is the end point
+	ln seems to be x,y if start and end end of line
+	
+	t appears to be unused
+	origang - original angle??? (unused)
+	
+	
+	
+	'''
 	#plt,ln= shortest.getloc(t,b,a,origang)
 	n1 = b[ln[0]]  #gets point of start of line
 	n2 = b[ln[1]]  #gets point of end of line
-	if [True for tmp in a if tmp[0] == ln[1] and tmp[1] == ln[0]]:
+	if [True for tmp in a if tmp[0] == ln[1] and tmp[1] == ln[0]]:  #is it closer to the beginning or end point of the (start) line
 		ns = [[-1, ln[0], distance(n2, plt)/4]]
 	else:
 		ns = [[-1, ln[1], distance(n1, plt)/4]]
 	n1 = b[ln1[0]]
 	n2 = b[ln1[1]]
-	if [True for tmp in a if tmp[0] == ln1[1] and tmp[1] == ln1[0]]:
+	if [True for tmp in a if tmp[0] == ln1[1] and tmp[1] == ln1[0]]: #is it closer to the beginnin or the end point of the (end) line
 		ns += [[ln1[1], -2, distance(n2, plt1)/4]]
 	else:
 		ns += [[ln1[0], -2, distance(n1, plt1)/4]]

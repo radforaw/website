@@ -158,7 +158,11 @@ def temperature():
 
 @app.route("/rtem")
 def rtem():
-	response=make_response(pri.graph()[0].read())
+	args=request.args.to_dict()
+	if 'loop' in args:
+		response=make_response(pri.graph(args['loop'])[0].read())
+	else:
+		response=make_response(pri.graph()[0].read())
 	response.headers.set('Content-Type', 'image/png')
 	return response
 
